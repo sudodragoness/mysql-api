@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
-const queries = require('./queries/social.queries');
+const socialQueries = require('./queries/social.queries');
+const authQueries = require('./queries/auth.queries');
 
 // Get the Host from environment variable
 const host = process.env.DB_HOST || 'localhost';
@@ -22,13 +23,20 @@ const con = mysql.createConnection({
 });
 
 // Connect to the database
-con.connect((err) => {
+con.connect(function(err) {
     if (err) throw err;
     console.log('Connected to MySQL database');
-    con.query(queries.CREATE_SOCIAL_MEDIA_ACCOUNTS_TABLE, (err, result) => {
+
+    con.query(authQueries.CREATE_USERS_TABLE, (err, result) => {
         if (err) throw err;
-        console.log('Table created');
+        console.log('Users Table created or exists already');
     });
+
+    con.query(socialQueries.CREATE_SOCIAL_MEDIA_ACCOUNTS_TABLE, (err, result) => {
+        if (err) throw err;
+        console.log('Social Media Accounts Table created or exists already');
+    });
+
 });
 
 module.exports = con;

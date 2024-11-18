@@ -1,3 +1,4 @@
+
 const con = require('../db-config');
 const queries = require('../queries/social.queries');
 
