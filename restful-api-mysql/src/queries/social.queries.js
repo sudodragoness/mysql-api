@@ -5,11 +5,11 @@
  */
 
 exports.CREATE_SOCIAL_MEDIA_ACCOUNTS_TABLE = `CREATE TABLE IF NOT EXISTS social_media_accounts (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    platform VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL
-  )`;
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  platform VARCHAR(255) NOT NULL,
+  username VARCHAR(255) NOT NULL,
+  url VARCHAR(255) NOT NULL
+)`;
 
 // Get all 
 exports.getAllSocialMediaAccounts = 'SELECT * FROM social_media_accounts';
@@ -28,6 +28,3 @@ exports.updateSocialMediaAccount = 'UPDATE social_media_accounts SET platform = 
 
 // Delete a social media account by id
 exports.deleteSocialMediaAccount = 'DELETE FROM social_media_accounts WHERE id = ?';
-
-
-

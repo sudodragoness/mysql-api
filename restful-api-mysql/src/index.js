@@ -7,9 +7,9 @@ const socialRoutes = require('./routes/social.routes');
 const middleware = require('./middleware/errors.middleware');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const fileRoutes = require('./routes/file.routes');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
 
 // Middleware - logs server requests to console
 app.use(logger('dev'));
@@ -25,13 +25,7 @@ app.use(cors());
 app.use('/api/accounts', socialRoutes); // http://localhost:3000/api/accounts
 app.use('/api/auth', authRoutes); // http://localhost:3000/api/auth
 app.use('/api/users', userRoutes); // http://localhost:3000/api/users
-
-// File upload route
-app.post('/upload', upload.single('artwork'), (req, res) => {
-  const artworkFile = req.file;
-  // Process the uploaded file here
-  res.json({ message: 'File uploaded successfully' });
-});
+app.use('/api/files', fileRoutes);
 
 // Error handling middleware
 app.use(middleware.error404); // http://localhost:3000/users

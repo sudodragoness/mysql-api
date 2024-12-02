@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const socialQueries = require('./queries/social.queries');
 const authQueries = require('./queries/auth.queries');
+const fileQueries = require('./queries/file.queries');
 
 // Get the Host from environment variable
 const host = process.env.DB_HOST || 'localhost';
@@ -35,6 +36,11 @@ con.connect(function(err) {
     con.query(socialQueries.CREATE_SOCIAL_MEDIA_ACCOUNTS_TABLE, (err, result) => {
         if (err) throw err;
         console.log('Social Media Accounts Table created or exists already');
+    });
+
+    con.query(fileQueries.CREATE_FILES_TABLE, (err, result) => {
+        if (err) throw err;
+        console.log('Files Table created or exists already');
     });
 
 });
