@@ -42,37 +42,51 @@ exports.registerUser = function(req, res) {
       });
   };
 
+
 // Login a user
 exports.login = function(req, res) {
-    // Check if user exists
-    con.query(
-        userQueries.GET_ME_BY_USERNAME_WITH_PASSWORD,
-        [req.body.username],
-        function(err, user) {
-            if (err) {
-                res.status(500).send({ message: 'Error logging in user' });
-            }
+  // Check if user exists
+  con.query(
+      userQueries.GET_ME_BY_USERNAME_WITH_PASSWORD,
+      [req.body.username],
+      function(err, user) {
+          if (err) {
+              res.status(500).send({ message: 'Error logging in user' });
+          }
 
-            console.log(user);
-            // validate password
-            bcrypt
-                .compare(req.body.password, user[0].password)
-                .then(function(validPassword) {
-                    if (!validPassword) {
-                        res.status(401).send({ message: 'Invalid password' });
-                    } else {
-                        // Create token
-                        const token = jwt.sign({ id: user[0].id }, jwtConfig.secret);
-                        res.header('auth-token', token).status(200).send({
-                            auth: true,
-                            username: user[0].username,
-                            msg: 'Logged in successfully',
-                        });
-                    }
-                })
-        }
-    );
+          if (!user.length) {
+              return res.status(401).send({ message: 'Invalid credentials' });
+          }
+
+          // Validate password
+          bcrypt
+              .compare(req.body.password, user[0].password)
+              .then(function(validPassword) {
+                  if (!validPassword) {
+                      return res.status(401).send({ message: 'Invalid password' });
+                  } else {
+                      // Generate JWT token
+                      const token = jwt.sign(
+                          { id: user[0].id, username: user[0].username },  // Payload
+                          jwtConfig.secret,  // Secret key
+                          { expiresIn: '1h' }  // Expiration time for the token
+                      );
+                      res.header('auth-token', token).status(200).send({
+                          auth: true,
+                          username: user[0].username,
+                          msg: 'Logged in successfully',
+                          token: token  // Send the token in the response
+                      });
+                  }
+              })
+              .catch(err => {
+                  console.error(err);
+                  res.status(500).send({ message: 'Error validating password' });
+              });
+      }
+  );
 };
+
 
 // Update a user
 exports.updateUser = function(req, res) {

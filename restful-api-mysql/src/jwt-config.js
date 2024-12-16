@@ -1,3 +1,5 @@
+// jwt-config.js
 module.exports = {
-    secret: 'mysecretkey'
-};
+    secret: 'your-secret-key'  
+  };
+  

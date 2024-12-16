@@ -1,20 +1,30 @@
 const jwt = require('jsonwebtoken');
-const jwtConfig = require('../jwt-config');
+const jwtConfig = require('../jwt-config'); // Import the jwt-config file
 
-module.exports = function(req, res, next) {
-    // Get token from header
-    const token = req.headers['auth-token'];
+module.exports = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  
+  if (!authHeader) {
+    console.error('No Authorization header found');
+    return res.status(403).send({ message: 'No token provided' });
+  }
 
-    if (!token) {
-        res.status(401).send({ auth: false, msg: 'Access Denied'});
+  const token = authHeader.split(' ')[1];
+  console.log('Received Token:', token); // Log the received token for debugging
+
+  if (!token) {
+    console.error('Token not found in Authorization header');
+    return res.status(403).send({ message: 'No token provided' });
+  }
+
+  jwt.verify(token, jwtConfig.secret, (err, decoded) => {
+    if (err) {
+      console.error('Token verification failed:', err.message);
+      return res.status(401).send({ message: 'Unauthorized' });
     }
 
-    try {
-        // return the user id when creating the token
-        const verified = jwt.verify(token, jwtConfig.secret);
-        req.user = verified;
-        next();
-    } catch (err) {
-        res.status(400).send({ auth: false, msg: 'Invalid Token' });
-    }
+    console.log('Token successfully verified:', decoded); // Log the decoded token payload
+    req.user = decoded; // Attach the decoded payload to the request object
+    next(); // Proceed to the next middleware or route
+  });
 };
